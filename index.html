@@ -14,14 +14,16 @@
         .incorrecta { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
         #mensaje { margin-top: 1.5rem; font-size: 1.4rem; font-weight: bold; }
         #siguiente { margin-top: 1.2rem; background: #2563eb; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; display: none; font-size: 1rem; }
-        #btnVoz { background: #f59e0b; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; margin-bottom: 1rem; font-size: 1rem; }
+        #btnIniciar, #btnVoz { background: #f59e0b; color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; cursor: pointer; margin: 0.5rem; font-size: 1rem; }
     </style>
 </head>
 <body>
     <div class="caja">
         <h2>¿Cuál es el resultado?</h2>
-        <button id="btnVoz" onclick="leerSuma()">🔊 Escuchar la suma</button>
-        <div class="operacion" id="mostrarSuma">7 + 5 = ?</div>
+        <!-- Botón para activar la voz por primera vez -->
+        <button id="btnIniciar" onclick="activarVoz()">👆 Toca aquí para empezar</button>
+        <button id="btnVoz" onclick="leerSuma()" style="display:none;">🔊 Escuchar la suma</button>
+        <div class="operacion" id="mostrarSuma"></div>
 
         <button class="opcion" onclick="comprobar(this, 11)">11</button>
         <button class="opcion" onclick="comprobar(this, 12)">12</button>
@@ -42,18 +44,25 @@
         ];
 
         let indice = 0;
+        let vozActiva = false;
 
         function hablar(texto) {
-            // Detener cualquier voz anterior
             window.speechSynthesis.cancel();
             const voz = new SpeechSynthesisUtterance(texto);
             voz.lang = "es-ES";
-            voz.rate = 0.9; // Velocidad normal
+            voz.rate = 0.9;
             window.speechSynthesis.speak(voz);
         }
 
+        function activarVoz() {
+            vozActiva = true;
+            document.getElementById('btnIniciar').style.display = 'none';
+            document.getElementById('btnVoz').style.display = 'inline-block';
+            cargarSuma();
+        }
+
         function leerSuma() {
-            hablar(ejercicios[indice].suma);
+            if(vozActiva) hablar(ejercicios[indice].suma);
         }
 
         function cargarSuma() {
@@ -67,11 +76,11 @@
             });
             document.getElementById('mensaje').textContent = '';
             document.getElementById('siguiente').style.display = 'none';
-            // Lee automáticamente al cambiar de ejercicio
-            hablar(`Ejercicio: ${dato.suma}`);
+            if(vozActiva) hablar(`Ejercicio: ${dato.suma}`);
         }
 
         function comprobar(botonElegido, valor) {
+            if(!vozActiva) return;
             const correcta = ejercicios[indice].respuestaBuena;
             document.querySelectorAll('.opcion').forEach(b => b.disabled = true);
 
@@ -97,9 +106,6 @@
             indice = (indice + 1) % ejercicios.length;
             cargarSuma();
         }
-
-        // Iniciar y leer la primera suma
-        cargarSuma();
     </script>
 </body>
 </html>
