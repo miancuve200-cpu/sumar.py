@@ -5,48 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejercicios de Sumas - Elige la respuesta</title>
     <style>
-        body { font-family: Arial; max-width: 500px; margin: 3rem auto; padding: 0 1rem; }
-        .caja { background: #f5f5f5; padding: 2rem; border-radius: 10px; text-align: center; }
-        .operacion { font-size: 2rem; font-weight: bold; margin: 1.5rem 0; color: #1e40af; }
-        .opcion { display: block; width: 100%; padding: 0.9rem; margin: 0.6rem 0; font-size: 1.1rem; border: 2px solid #ccc; border-radius: 8px; cursor: pointer; background: white; transition: 0.2s; }
-        .opcion:hover { border-color: #2563eb; background: #eff6ff; }
+        body { font-family: Arial; max-width: 550px; margin: 3rem auto; padding: 0 1rem; }
+        .caja { background: #f0f9ff; padding: 2rem; border-radius: 12px; text-align: center; border: 2px solid #0369a1; }
+        .operacion { font-size: 2.2rem; font-weight: bold; margin: 1.5rem 0; color: #0c4a6e; }
+        .opcion { display: inline-block; width: 45%; padding: 1rem; margin: 0.5rem 2%; font-size: 1.3rem; border: 2px solid #94a3b8; border-radius: 8px; cursor: pointer; background: white; transition: 0.2s; }
+        .opcion:hover { border-color: #0284c7; background: #e0f2fe; }
         .correcta { border-color: #16a34a; background: #dcfce7; color: #166534; font-weight: bold; }
-        .incorrecta { border-color: #dc2626; background: #fee2e2; color: #991b1b; }
-        #mensaje { margin-top: 1.5rem; font-size: 1.3rem; font-weight: bold; }
-        #siguiente { margin-top: 1rem; background: #2563eb; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 5px; cursor: pointer; display: none; }
+        .incorrecta { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
+        #mensaje { margin-top: 1.5rem; font-size: 1.4rem; font-weight: bold; }
+        #siguiente { margin-top: 1.2rem; background: #2563eb; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; display: none; font-size: 1rem; }
     </style>
 </head>
 <body>
     <div class="caja">
-        <h2>¿Cuál es el resultado?</h2>
-        <div class="operacion" id="operacion">5 + 3 = ?</div>
+        <h2>¿Cuál es el resultado de la suma?</h2>
+        <!-- AQUÍ APARECEN LAS SUMAS YA LISTAS -->
+        <div class="operacion" id="mostrarSuma">7 + 5 = ?</div>
 
-        <button class="opcion" onclick="verificar(this, 7)">7</button>
-        <button class="opcion" onclick="verificar(this, 8)">8</button>
-        <button class="opcion" onclick="verificar(this, 9)">9</button>
-        <button class="opcion" onclick="verificar(this, 10)">10</button>
+        <button class="opcion" onclick="comprobar(this, 11)">11</button>
+        <button class="opcion" onclick="comprobar(this, 12)">12</button>
+        <button class="opcion" onclick="comprobar(this, 13)">13</button>
+        <button class="opcion" onclick="comprobar(this, 14)">14</button>
 
         <div id="mensaje"></div>
-        <button id="siguiente" onclick="cambiarEjercicio()">Siguiente ejercicio</button>
+        <button id="siguiente" onclick="cambiarEjercicio()">Siguiente suma</button>
     </div>
 
     <script>
-        // Lista de ejercicios ya definidos
+        // AQUÍ ESTÁN TODAS LAS SUMAS YA ESCRITAS Y LISTAS
         const ejercicios = [
-            { suma: "5 + 3 = ?", correcta: 8, opciones: [7,8,9,10] },
-            { suma: "12 + 4 = ?", correcta: 16, opciones: [14,15,16,17] },
-            { suma: "20 + 5 = ?", correcta: 25, opciones: [22,24,25,27] },
-            { suma: "8 + 9 = ?", correcta: 17, opciones: [15,16,17,18] }
+            { suma: "7 + 5 = ?", respuestaBuena: 12, opciones: [11, 12, 13, 14] },
+            { suma: "15 + 6 = ?", respuestaBuena: 21, opciones: [19, 20, 21, 22] },
+            { suma: "30 + 10 = ?", respuestaBuena: 40, opciones: [35, 38, 40, 45] },
+            { suma: "9 + 8 = ?", respuestaBuena: 17, opciones: [15, 16, 17, 18] },
+            { suma: "24 + 5 = ?", respuestaBuena: 29, opciones: [27, 28, 29, 30] }
         ];
 
-        let actual = 0;
+        let indice = 0;
 
-        function cargarEjercicio() {
-            const e = ejercicios[actual];
-            document.getElementById('operacion').textContent = e.suma;
+        function cargarSuma() {
+            const dato = ejercicios[indice];
+            document.getElementById('mostrarSuma').textContent = dato.suma;
             const botones = document.querySelectorAll('.opcion');
-            botones.forEach((btn, i) => {
-                btn.textContent = e.opciones[i];
+            botones.forEach((btn, pos) => {
+                btn.textContent = dato.opciones[pos];
                 btn.className = 'opcion';
                 btn.disabled = false;
             });
@@ -54,34 +56,33 @@
             document.getElementById('siguiente').style.display = 'none';
         }
 
-        function verificar(boton, valorElegido) {
-            const correcta = ejercicios[actual].correcta;
+        function comprobar(botonElegido, valor) {
+            const correcta = ejercicios[indice].respuestaBuena;
             // Bloquear todas las opciones al elegir una
             document.querySelectorAll('.opcion').forEach(b => b.disabled = true);
 
-            if (valorElegido === correcta) {
-                boton.classList.add('correcta');
-                document.getElementById('mensaje').textContent = '✅ ¡MUY BIEN! Es la respuesta correcta';
+            if (valor === correcta) {
+                botonElegido.classList.add('correcta');
+                document.getElementById('mensaje').textContent = '✅ ¡EXCELENTE! Respuesta correcta';
             } else {
-                boton.classList.add('incorrecta');
-                // Resaltar la correcta
+                botonElegido.classList.add('incorrecta');
+                // Marcar la respuesta buena
                 document.querySelectorAll('.opcion').forEach(b => {
                     if (parseInt(b.textContent) === correcta) b.classList.add('correcta');
                 });
-                document.getElementById('mensaje').textContent = '❌ Inténtalo de nuevo. La correcta está marcada';
+                document.getElementById('mensaje').textContent = '❌ No es esa. Mira cuál es la correcta';
             }
 
-            // Mostrar botón para seguir
             document.getElementById('siguiente').style.display = 'inline-block';
         }
 
         function cambiarEjercicio() {
-            actual = (actual + 1) % ejercicios.length;
-            cargarEjercicio();
+            indice = (indice + 1) % ejercicios.length;
+            cargarSuma();
         }
 
-        // Cargar el primer ejercicio al abrir
-        cargarEjercicio();
+        // CARGA LA PRIMERA SUMA AL ABRIR LA PÁGINA
+        cargarSuma();
     </script>
 </body>
 </html>
